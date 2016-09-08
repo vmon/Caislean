@@ -84,4 +84,24 @@ Local directory where TLS files are stored (in the examples above, we used
 
 ## Optional parameters
 
-None.
+### `tls_additional_domains`
+
+A set of domains for which you also want to upload to your server a certificate,
+a certification authority certificate chain and a private key. This is at the
+moment primarily useful for a web server serving several host names, and is used
+in conjunction with the `nginx` role.
+
+The TLS files for the specified domains must be located in your TLS directory
+(see parameter `tls_directory` above) on your local machine and must exactly be
+called `<host name>.ca.crt.pem` (for the certification authority certificate
+chain), `<host name>.cert.crt.pem` (your certificate) and `<host name>.key.pem`
+(your private key).
+
+Do not use this parameter if you are planning to use Let's Encrypt. The
+`letsencrypt` role will ignore domains listed in `tls_additional_domains`. See
+`letsencrypt` role documentation for more details on using Let's Encrypt.
+
+Example:
+
+    tls_additional_domains:
+      - www.otherdomain.com

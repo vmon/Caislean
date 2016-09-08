@@ -83,9 +83,59 @@ To delete a user's account, simply remove their LDAP corresponding entry:
 
 ## Mandatory parameters
 
+### `ldap_bind_addresses`
+
+Default: `[ 127.0.0.1 ]`
+
+Local IP addresses for the OpenLDAP server to listen on. By default we only
+listen on the local interface (127.0.0.1). You can specify any number of IP
+addresses assigned to your server. IPv6 addresses must go between square
+brackets. You should be able to use special addresses `0.0.0.0` (IPv4) and `::`
+(IPv6) to listen on all network interfaces.
+
+Be careful if you bind public IP addresses: the LDAP protocol is not encrypted
+and LDAP over TLS is not (yet) supported by Caislean. Binding non-loopback
+addresses may still be useful on a local area network or on a virtual network
+between virtual machines.
+
+Example:
+
+    ldap_bind_addresses:
+      - 127.0.0.1
+      - '[::1]'
+
 ### `ldap_admin_pass`
 
 The LDAP administrator password.
+
+### `ldap_managed_domains`
+
+Default: `[ domain: domain_name ]`
+
+List of domain names managed in the LDAP directory. The role will create one
+separate LDAP database for each of the domains.
+
+Optionally, use the parameter `admin_pass` to set an administrator password
+specific of a given domain (otherwise the password set in `ldap_admin_pass` will
+be used). For any given domain `example.com`, the administrator account to which
+to identify is `cn=admin,dc=example,dc=com`.
+
+Optionally, use parameters `users_ou` and `groups_ou` to define custom
+organizationalUnit (OU) entries meant to contain your users and groups. If
+unset, the `mail` OU will contain users, and no OU is created for groups. For
+now, changing the users OU will break all Caislean roles that query LDAP for
+user authentication (`virtualmail`, `prosody`, etc.).
+
+Example:
+
+    ldap_managed_domains:
+      - domain: "{{ domain_name }}"
+      - domain: additionaldomain.com
+      - domain: some_other_domain.org
+        admin_pass: specificadminpass
+      - domain: somethingelse.com
+        users_ou: MyUsers
+        groups_ou: MyGroups
 
 ### `domain_name`
 
